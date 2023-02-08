@@ -1,6 +1,8 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './App.css';
 import TodoList, {TaskType} from "./TodoList";
+
+export type FilterValuesType = "all" | "active" | "completed"
 
 function App() {
     //BLL:
@@ -10,10 +12,28 @@ function App() {
         {id: 2, title: "ES6 & TS", isDone: true},
         {id: 3, title: "React & Redux", isDone: false},
     ]
-    //UI:
+
+
+const[filter, setFilter] = useState<FilterValuesType>("all")
+const changeFilterValue = (filter:FilterValuesType) => setFilter(filter)
+
+    let filteredTasks: Array<TaskType> = []
+    if (filter === "all") {
+        filteredTasks = tasks
+    }
+    if (filter === "active") {
+        filteredTasks = tasks.filter(t => t.isDone === false)
+    }
+    if (filter === "completed") {
+        filteredTasks = tasks.filter(t => t.isDone === true)
+    }
     return (
         <div className="App">
-            <TodoList title={todoListTitle} tasks={tasks}/>
+            <TodoList
+                title={todoListTitle}
+                tasks={filteredTasks}
+            changeFilterValue={changeFilterValue}
+            />
         </div>
     );
 }
