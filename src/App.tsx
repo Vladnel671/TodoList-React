@@ -17,6 +17,9 @@ function App(): JSX.Element {
     ])
     const removeTask = (taskId: string) => setTasks(tasks.filter(t => t.id !== taskId))
 
+    const changeTaskStatus = (taskId: string, newIsDone: boolean) => {
+        setTasks(tasks.map((t )=> t.id === taskId ? {...t, isDone: !t.isDone} : t))
+    }
     const addTask = (title: string) => {
         const newTask: TaskType = {
             id: v1(),
@@ -47,11 +50,13 @@ function App(): JSX.Element {
     return (
         <div className="App">
             <TodoList
+                filter={filter}
                 title={todoListTitle}
                 tasks={filteredTasks}
                 changeFilterValue={changeFilterValue}
                 removeTask={removeTask}
                 addTask={addTask}
+                changeTaskStatus={changeTaskStatus}
             />
         </div>
     );
