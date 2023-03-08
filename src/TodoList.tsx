@@ -4,13 +4,17 @@ import {FilterValuesType} from "./App";
 
 
 type TodoListPropsType = {
+    todoListId: string
     title: string
-    tasks: TaskType[]
-    changeFilterValue: (filter: FilterValuesType) => void
-    removeTask: (taskId: string) => void
-    addTask: (title: string) => void
-    changeTaskStatus : (taskId: string, isDone:boolean) => void
     filter: FilterValuesType
+    tasks: TaskType[]
+
+    removeTask: (taskId: string, todoListId: string) => void
+    addTask: (title: string, todoListId: string) => void
+    changeTaskStatus: (taskId: string, isDone: boolean, todoListId: string) => void
+
+    changeTodoListFilter: (filter: FilterValuesType, todoListId: string) => void
+    removeTodoList: (todoListId: string) => void
 }
 
 export type TaskType = {
@@ -20,44 +24,41 @@ export type TaskType = {
 }
 
 const TodoList: FC<TodoListPropsType> = (props): JSX.Element => {
-    // const addTaskInput: RefObject<HTMLInputElement> = useRef(null)
-    // const addTask = () => {
-    //     addTaskInput.current && props.addTask(addTaskInput.current.value)
-    // }
 
     const [title, setTitle] = useState<string>("")
     const [error, setError] = useState<boolean>(false)
-    const maxLengthUserMessage : number = 15
-    const isUserMessageTooLong : boolean = title.length > maxLengthUserMessage
+    const maxLengthUserMessage: number = 15
+    const isUserMessageTooLong: boolean = title.length > maxLengthUserMessage
     const isAddBtnDisabled = title.length === 0 || title.length > 15
 
     const addTask = () => {
         const trimmedTitle = title.trim()
         if (trimmedTitle) {
-            props.addTask(title)
-        }else {
+            props.addTask(trimmedTitle, props.todoListId)
+        } else {
             setError(true)
         }
         setTitle("")
     }
-    const onKeyDownTask = (e:KeyboardEvent<HTMLInputElement>)=>e.key === "Enter" && addTask()
+    const onKeyDownTask = (e: KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && addTask()
     const changeLocalTitle = (e: ChangeEvent<HTMLInputElement>) => {
         error && setError(false)
         setTitle(e.currentTarget.value)
     }
+    const removeTodoList = () =>props.removeTodoList(props.todoListId)
 
-    const handlerCreator = (filter: FilterValuesType):() => void => () : void => props.changeFilterValue(filter)
+    const handlerCreator = (filter: FilterValuesType) => () => props.changeTodoListFilter(filter, props.todoListId)
 
     const userMaxLengthMessage = isUserMessageTooLong && <div style={{color: "hotpink"}}>Task is too long</div>
     const userErrorMessage = error && <div style={{color: "hotpink"}}>Title is required!</div>
-    const inputErrorClasses = error || isUserMessageTooLong ? "input-error": ""
+    const inputErrorClasses = error || isUserMessageTooLong ? "input-error" : ""
 
     return (
         <div className={"todolist"}>
-            <h3>{props.title}</h3>
+            <h3>{props.title}
+                <button onClick={removeTodoList}>x</button>
+            </h3>
             <div>
-                {/*<input ref={addTaskInput}/>*/}
-                {/*<button onClick={addTask}>+</button>*/}
                 <input
                     onKeyDown={onKeyDownTask}
                     value={title}
@@ -70,6 +71,7 @@ const TodoList: FC<TodoListPropsType> = (props): JSX.Element => {
                 {userErrorMessage}
             </div>
             <TasksList
+                todoListId={props.todoListId}
                 tasks={props.tasks}
                 removeTask={props.removeTask}
                 changeTaskStatus={props.changeTaskStatus}
