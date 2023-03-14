@@ -8,6 +8,7 @@
 }
 
 .todolist {
+    height: max-content;
     border: 2px solid hotpink;
     border-radius: 5px;
     padding: 20px;

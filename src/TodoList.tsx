@@ -1,6 +1,8 @@
 import React, {ChangeEvent, FC, RefObject, useRef, useState, KeyboardEvent} from 'react';
 import TasksList from "./TasksList";
 import {FilterValuesType} from "./App";
+import AddItemForm from "./AddItemForm";
+import EditableSpan from "./EditableSpan";
 
 
 type TodoListPropsType = {
@@ -12,9 +14,11 @@ type TodoListPropsType = {
     removeTask: (taskId: string, todoListId: string) => void
     addTask: (title: string, todoListId: string) => void
     changeTaskStatus: (taskId: string, isDone: boolean, todoListId: string) => void
+    changeTaskTitle: (taskId: string, newTitle: string, todoListId: string) => void
 
     changeTodoListFilter: (filter: FilterValuesType, todoListId: string) => void
     removeTodoList: (todoListId: string) => void
+    changeTodoListTitle: (title: string, todoListId: string) => void
 }
 
 export type TaskType = {
@@ -25,52 +29,19 @@ export type TaskType = {
 
 const TodoList: FC<TodoListPropsType> = (props): JSX.Element => {
 
-    const [title, setTitle] = useState<string>("")
-    const [error, setError] = useState<boolean>(false)
-    const maxLengthUserMessage: number = 15
-    const isUserMessageTooLong: boolean = title.length > maxLengthUserMessage
-    const isAddBtnDisabled = title.length === 0 || title.length > 15
-
-    const addTask = () => {
-        const trimmedTitle = title.trim()
-        if (trimmedTitle) {
-            props.addTask(trimmedTitle, props.todoListId)
-        } else {
-            setError(true)
-        }
-        setTitle("")
-    }
-    const onKeyDownTask = (e: KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && addTask()
-    const changeLocalTitle = (e: ChangeEvent<HTMLInputElement>) => {
-        error && setError(false)
-        setTitle(e.currentTarget.value)
-    }
+    const addTask = (title: string) => props.addTask(title, props.todoListId)
     const removeTodoList = () =>props.removeTodoList(props.todoListId)
-
     const handlerCreator = (filter: FilterValuesType) => () => props.changeTodoListFilter(filter, props.todoListId)
-
-    const userMaxLengthMessage = isUserMessageTooLong && <div style={{color: "hotpink"}}>Task is too long</div>
-    const userErrorMessage = error && <div style={{color: "hotpink"}}>Title is required!</div>
-    const inputErrorClasses = error || isUserMessageTooLong ? "input-error" : ""
+    const changeTodoListTitle = (title: string) => props.changeTodoListTitle(title, props.todoListId)
 
     return (
         <div className={"todolist"}>
-            <h3>{props.title}
+            <h3><EditableSpan title={props.title} changeTitle={changeTodoListTitle}/>
                 <button onClick={removeTodoList}>x</button>
             </h3>
-            <div>
-                <input
-                    onKeyDown={onKeyDownTask}
-                    value={title}
-                    onChange={changeLocalTitle}
-                    placeholder="Please, enter title"
-                    className={inputErrorClasses}
-                />
-                <button disabled={isAddBtnDisabled} onClick={addTask}>+</button>
-                {userMaxLengthMessage}
-                {userErrorMessage}
-            </div>
+            <AddItemForm maxLengthUserMessage={15} addNewItem={addTask} />
             <TasksList
+                changeTaskTitle={props.changeTaskTitle}
                 todoListId={props.todoListId}
                 tasks={props.tasks}
                 removeTask={props.removeTask}

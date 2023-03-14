@@ -3,6 +3,7 @@ import {v1} from 'uuid';
 
 import './App.css';
 import TodoList, {TaskType} from "./TodoList";
+import AddItemForm from "./AddItemForm";
 
 export type FilterValuesType = "all" | "active" | "completed"
 
@@ -35,9 +36,9 @@ function App(): JSX.Element {
             {id: v1(), title: "React & Redux", isDone: false}
         ],
         [todoListId_2]: [
-            {id: v1(), title: "HTML & CSS", isDone: true},
-            {id: v1(), title: "ES6 & TS", isDone: true},
-            {id: v1(), title: "React & Redux", isDone: false}
+            {id: v1(), title: "MILK", isDone: true},
+            {id: v1(), title: "BREAD", isDone: true},
+            {id: v1(), title: "MEAT", isDone: false}
         ]
     })
 
@@ -56,15 +57,34 @@ function App(): JSX.Element {
     const changeTaskStatus = (taskId: string, newIsDone: boolean, todoListId: string) => {
         setTasks({...tasks, [todoListId]: tasks[todoListId].map(t => t.id === taskId ? {...t, isDone: newIsDone} : t)})
     }
+    const changeTaskTitle = (taskId: string, newTitle: string, todoListId: string) => {
+        setTasks({...tasks, [todoListId]: tasks[todoListId].map(t => t.id === taskId ? {...t, title: newTitle} : t)})
+    }
 
 
     const changeTodoListFilter = (filter: FilterValuesType, todoListId: string) => {
         setTodoLists(todoLists.map(tl => tl.id === todoListId ? {...tl, filter: filter} : tl))
     }
+    const changeTodoListTitle = (title: string, todoListId: string) => {
+        setTodoLists(todoLists.map(tl => tl.id === todoListId ? {...tl, title: title} : tl))
+    }
+
+
     const removeTodoList = (todoListId: string) => {
         setTodoLists(todoLists.filter( tl => tl.id !== todoListId))
         delete tasks[todoListId]
     }
+    const addTodoList = (title: string) => {
+        const newTodoListId = v1()
+        const newTodoList : TodoListType = {
+            id: newTodoListId,
+            title: title,
+            filter: "all"
+        }
+        setTodoLists([...todoLists, newTodoList])
+        setTasks( {...tasks, [newTodoListId]: []})
+    }
+
     const getFilteredTasks = (tasks: Array<TaskType>, filter: FilterValuesType): Array<TaskType> => {
 
         switch (filter) {
@@ -90,9 +110,11 @@ function App(): JSX.Element {
                 removeTask={removeTask}
                 addTask={addTask}
                 changeTaskStatus={changeTaskStatus}
+                changeTaskTitle={changeTaskTitle}
 
                 changeTodoListFilter={changeTodoListFilter}
                 removeTodoList={removeTodoList}
+                changeTodoListTitle={changeTodoListTitle}
             />
         )
     })
@@ -100,6 +122,7 @@ function App(): JSX.Element {
 
     return (
         <div className="App">
+            <AddItemForm maxLengthUserMessage={15} addNewItem={addTodoList}/>
             {todoListsComponents}
         </div>
     );
