@@ -3,6 +3,8 @@ import TasksList from "./TasksList";
 import {FilterValuesType} from "./App";
 import AddItemForm from "./AddItemForm";
 import EditableSpan from "./EditableSpan";
+import {Button, IconButton, Typography} from "@mui/material";
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
 
 type TodoListPropsType = {
@@ -30,16 +32,22 @@ export type TaskType = {
 const TodoList: FC<TodoListPropsType> = (props): JSX.Element => {
 
     const addTask = (title: string) => props.addTask(title, props.todoListId)
-    const removeTodoList = () =>props.removeTodoList(props.todoListId)
+    const removeTodoList = () => props.removeTodoList(props.todoListId)
     const handlerCreator = (filter: FilterValuesType) => () => props.changeTodoListFilter(filter, props.todoListId)
     const changeTodoListTitle = (title: string) => props.changeTodoListTitle(title, props.todoListId)
 
     return (
         <div className={"todolist"}>
-            <h3><EditableSpan title={props.title} changeTitle={changeTodoListTitle}/>
-                <button onClick={removeTodoList}>x</button>
-            </h3>
-            <AddItemForm maxLengthUserMessage={15} addNewItem={addTask} />
+            <Typography
+                variant='h5'
+                align="center"
+                fontWeight="bold"
+            ><EditableSpan title={props.title} changeTitle={changeTodoListTitle}/>
+                <IconButton onClick={removeTodoList}>
+                    <HighlightOffIcon/>
+                </IconButton>
+            </Typography>
+            <AddItemForm maxLengthUserMessage={15} addNewItem={addTask}/>
             <TasksList
                 changeTaskTitle={props.changeTaskTitle}
                 todoListId={props.todoListId}
@@ -49,21 +57,29 @@ const TodoList: FC<TodoListPropsType> = (props): JSX.Element => {
             />
 
             <div className="filter-btn-container">
-                <button
-                    className={props.filter === "all" ? "active-filter-btn" : "filter-btn"}
-                    onClick={handlerCreator("all")}
+                <Button variant="contained"
+                        size="small"
+                        disableElevation
+                        onClick={handlerCreator("all")}
+                        color={props.filter === "all" ? "secondary" : "primary"}
                 >All
-                </button>
-                <button
+                </Button>
+                <Button
+                    variant="contained"
+                    size="small"
+                    disableElevation
                     onClick={handlerCreator("active")}
-                    className={props.filter === "active" ? "active-filter-btn" : "filter-btn"}
+                    color={props.filter === "active" ? "secondary" : "primary"}
                 >Active
-                </button>
-                <button
+                </Button>
+                <Button
+                    variant="contained"
+                    size="small"
+                    disableElevation
                     onClick={handlerCreator("completed")}
-                    className={props.filter === "completed" ? "active-filter-btn" : "filter-btn"}
+                    color={props.filter === "completed" ? "secondary" : "primary"}
                 >Completed
-                </button>
+                </Button>
             </div>
         </div>
     );

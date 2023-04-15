@@ -1,4 +1,6 @@
 import React, {ChangeEvent, FC, KeyboardEvent, useState} from 'react';
+import AddBoxIcon from '@mui/icons-material/AddBox';
+import {IconButton, TextField} from '@mui/material';
 
 type AddItemFormType = {
     maxLengthUserMessage: number
@@ -29,25 +31,27 @@ const AddItemForm: FC<AddItemFormType> = ({
     }
     const onKeyDownAddItem = (e: KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && addTask()
 
-    const userErrorMessage = error && <div style={{color: "hotpink"}}>Title is required!</div>
+    const userErrorMessage = error && <span style={{color: "hotpink"}}>Title is required!</span>
     const isUserMessageTooLong: boolean = title.length > maxLengthUserMessage
     const isAddBtnDisabled = !title.length || isUserMessageTooLong || error
-    const userMaxLengthMessage = isUserMessageTooLong && <div style={{color: "hotpink"}}>Task is too long</div>
+    const userMaxLengthMessage = isUserMessageTooLong && <span style={{color: "hotpink"}}>Task is too long</span>
     const inputErrorClasses = error || isUserMessageTooLong ? "input-error" : ""
 
 
     return (
-        <div>
-            <input
+        <div className={"add-form"}>
+            <TextField
+                size="small"
                 onKeyDown={onKeyDownAddItem}
                 value={title}
                 onChange={changeLocalTitle}
                 placeholder="Please, enter title"
-                className={inputErrorClasses}
+                error={!!inputErrorClasses}
+                helperText={userErrorMessage || userMaxLengthMessage}
             />
-            <button disabled={isAddBtnDisabled} onClick={addTask}>+</button>
-            {userMaxLengthMessage}
-            {userErrorMessage}
+            <IconButton size='small' disabled={isAddBtnDisabled} onClick={addTask}>
+                <AddBoxIcon/>
+            </IconButton>
         </div>
     );
 };
