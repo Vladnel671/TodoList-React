@@ -75,7 +75,6 @@ function App(): JSX.Element {
         setTasks({...tasks, [todoListId]: tasks[todoListId].map(t => t.id === taskId ? {...t, title: newTitle} : t)})
     }
 
-
     const changeTodoListFilter = (filter: FilterValuesType, todoListId: string) => {
         setTodoLists(todoLists.map(tl => tl.id === todoListId ? {...tl, filter: filter} : tl))
     }
@@ -167,8 +166,8 @@ function App(): JSX.Element {
                         </Typography>
                         <FormGroup>
                             <FormControlLabel
-                                control = {<Checkbox onChange={(e) => setDarkMode(e.currentTarget.checked)} />}
-                                label = {isDarkMode ? "DarkMode" : "LightMode"}
+                                control={<Checkbox onChange={() => setDarkMode(!isDarkMode)}/>}
+                                label={ "LightMode" }
                             />
                         </FormGroup>
                         <Button color="inherit">Login</Button>
